@@ -1,0 +1,79 @@
+1
+00:00:00,400 --> 00:00:03,049
+Ever liked an app, but wished it looked different?
+
+2
+00:00:03,049 --> 00:00:04,888
+Or worked more like you do?
+
+3
+00:00:06,067 --> 00:00:11,964
+Fluid lets apps built for it keep their data and useful features, while you choose the experience.
+
+4
+00:00:13,150 --> 00:00:14,235
+Take your tasks.
+
+5
+00:00:14,235 --> 00:00:18,174
+View them as a list, a board, or one thing at a time.
+
+6
+00:00:19,358 --> 00:00:22,403
+Change the view, and your work stays right there.
+
+7
+00:00:22,403 --> 00:00:23,583
+No starting over.
+
+8
+00:00:23,583 --> 00:00:26,006
+No copying everything into a new app.
+
+9
+00:00:27,192 --> 00:00:29,808
+You can also ask your AI assistant:
+
+10
+00:00:29,808 --> 00:00:34,438
+make this simpler, use bigger text, or show only what matters to me.
+
+11
+00:00:35,608 --> 00:00:39,073
+The assistant can build a different interface using the same app.
+
+12
+00:00:39,073 --> 00:00:41,363
+You review it and choose its access.
+
+13
+00:00:42,525 --> 00:00:44,240
+Just want the information?
+
+14
+00:00:44,240 --> 00:00:49,526
+A connected assistant can work with the data directly, without using the app's screens.
+
+15
+00:00:50,692 --> 00:00:53,455
+You decide what it can read or change.
+
+16
+00:00:53,455 --> 00:00:57,160
+See the available tools, and turn access off whenever you want.
+
+17
+00:00:58,317 --> 00:01:01,680
+Fluid is the shared set of rules that makes this possible.
+
+18
+00:01:01,680 --> 00:01:02,478
+Your app.
+
+19
+00:01:02,478 --> 00:01:03,276
+Your data.
+
+20
+00:01:03,276 --> 00:01:04,074
+Your way.

@@ -1,0 +1,110 @@
+{
+  "name": "fluid-workspace",
+  "version": "0.3.0-alpha.1",
+  "description": "A desktop app with a frontend you can replace. Reference implementation of the Fluid App Protocol.",
+  "private": true,
+  "type": "module",
+  "main": "dist-electron/main.cjs",
+  "license": "MIT",
+  "scripts": {
+    "dev": "node scripts/build-native.mjs && vite --host 127.0.0.1",
+    "desktop": "node scripts/desktop.mjs",
+    "build": "npm run native:build && tsc --noEmit && vite build && node scripts/build-electron.mjs",
+    "start": "electron .",
+    "test": "tsx --test tests/*.test.ts",
+    "test:e2e": "playwright test",
+    "check": "tsc --noEmit",
+    "agent": "tsx src/agent.ts",
+    "package": "npm run build && electron-builder --dir",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "native:build": "node scripts/build-native.mjs",
+    "protocol:generate": "node scripts/build-native.mjs",
+    "test:native": "cargo test --workspace",
+    "check:native": "cargo clippy --workspace --all-targets -- -D warnings",
+    "package:alpha": "npm run build && node scripts/package-alpha.mjs",
+    "test:packaged": "node scripts/test-packaged.mjs"
+  },
+  "build": {
+    "appId": "org.fluidprotocol.workspace",
+    "productName": "Fluid Workspace",
+    "asarUnpack": [
+      "dist-electron/agent.cjs"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "icon": "assets/icon.icns",
+      "category": "public.app-category.productivity",
+      "target": "zip",
+      "extraResources": [
+        {
+          "from": ".fluid/native/${os}-${arch}",
+          "to": "native"
+        }
+      ],
+      "identity": null
+    },
+    "linux": {
+      "icon": "assets/icon.png",
+      "target": "tar.gz",
+      "extraResources": [
+        {
+          "from": ".fluid/native/${os}-${arch}",
+          "to": "native"
+        }
+      ],
+      "category": "Utility"
+    },
+    "win": {
+      "target": "zip",
+      "extraResources": [
+        {
+          "from": ".fluid/native/${os}-${arch}",
+          "to": "native"
+        }
+      ]
+    },
+    "beforePack": "./scripts/before-pack.cjs",
+    "afterPack": "./scripts/after-pack.cjs",
+    "artifactName": "Fluid-${version}-${os}-${arch}.${ext}"
+  },
+  "dependencies": {
+    "lucide-react": "^1.67.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.2.1",
+    "electron": "^45.2.1",
+    "electron-builder": "^26.18.0",
+    "esbuild": "^0.28.2",
+    "prettier": "^3.9.10",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5",
+    "@modelcontextprotocol/sdk": "^1.32.2"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "author": "Fluid contributors",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LiorKaufman/fluid.git"
+  },
+  "bugs": {
+    "url": "https://github.com/LiorKaufman/fluid/issues"
+  },
+  "homepage": "https://github.com/LiorKaufman/fluid#readme"
+}

@@ -1,0 +1,884 @@
+{
+  "appId": "org.fluidprotocol.workspace",
+  "capabilities": [
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Discover the app contract, domain meanings, your current grants, and protocol runtime.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "name": "workspace.describe",
+      "outputSchema": {
+        "type": "object"
+      },
+      "permission": null
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "See exactly which tools this client can invoke, including schemas, grants, and reasons for unavailable tools.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "name": "tools.inspect",
+      "outputSchema": {
+        "type": "object"
+      },
+      "permission": null
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Read shared tasks. Filter by status, project, or case-insensitive title and notes search.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "project": {
+            "maxLength": 240,
+            "minLength": 1,
+            "type": "string"
+          },
+          "search": {
+            "maxLength": 240,
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "todo",
+              "in-progress",
+              "done"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "tasks.list",
+      "outputSchema": {
+        "properties": {
+          "revision": {
+            "type": "integer"
+          },
+          "tasks": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "createdAt": {
+                  "type": "string"
+                },
+                "dueDate": {
+                  "anyOf": [
+                    {
+                      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "id": {
+                  "maxLength": 240,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "notes": {
+                  "maxLength": 8000,
+                  "type": "string"
+                },
+                "priority": {
+                  "enum": [
+                    "low",
+                    "medium",
+                    "high"
+                  ],
+                  "type": "string"
+                },
+                "project": {
+                  "maxLength": 80,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "status": {
+                  "enum": [
+                    "todo",
+                    "in-progress",
+                    "done"
+                  ],
+                  "type": "string"
+                },
+                "title": {
+                  "maxLength": 240,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "updatedAt": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "title",
+                "notes",
+                "project",
+                "status",
+                "priority",
+                "dueDate",
+                "createdAt",
+                "updatedAt"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "tasks",
+          "revision"
+        ],
+        "type": "object"
+      },
+      "permission": "tasks:read"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Create a task. Defaults: todo status, medium priority, General project, and no due date.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "dueDate": {
+            "anyOf": [
+              {
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "notes": {
+            "maxLength": 8000,
+            "type": "string"
+          },
+          "priority": {
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "type": "string"
+          },
+          "project": {
+            "maxLength": 80,
+            "minLength": 1,
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "todo",
+              "in-progress",
+              "done"
+            ],
+            "type": "string"
+          },
+          "title": {
+            "maxLength": 240,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "title"
+        ],
+        "type": "object"
+      },
+      "name": "tasks.create",
+      "outputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "createdAt": {
+            "type": "string"
+          },
+          "dueDate": {
+            "anyOf": [
+              {
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "id": {
+            "maxLength": 240,
+            "minLength": 1,
+            "type": "string"
+          },
+          "notes": {
+            "maxLength": 8000,
+            "type": "string"
+          },
+          "priority": {
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "type": "string"
+          },
+          "project": {
+            "maxLength": 80,
+            "minLength": 1,
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "todo",
+              "in-progress",
+              "done"
+            ],
+            "type": "string"
+          },
+          "title": {
+            "maxLength": 240,
+            "minLength": 1,
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "notes",
+          "project",
+          "status",
+          "priority",
+          "dueDate",
+          "createdAt",
+          "updatedAt"
+        ],
+        "type": "object"
+      },
+      "permission": "tasks:write"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Update provided task fields. Omitted fields are preserved. Done means completed; in-progress means actively being worked on.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "dueDate": {
+            "anyOf": [
+              {
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "id": {
+            "maxLength": 240,
+            "minLength": 1,
+            "type": "string"
+          },
+          "notes": {
+            "maxLength": 8000,
+            "type": "string"
+          },
+          "priority": {
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "type": "string"
+          },
+          "project": {
+            "maxLength": 80,
+            "minLength": 1,
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "todo",
+              "in-progress",
+              "done"
+            ],
+            "type": "string"
+          },
+          "title": {
+            "maxLength": 240,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object"
+      },
+      "name": "tasks.update",
+      "outputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "createdAt": {
+            "type": "string"
+          },
+          "dueDate": {
+            "anyOf": [
+              {
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "id": {
+            "maxLength": 240,
+            "minLength": 1,
+            "type": "string"
+          },
+          "notes": {
+            "maxLength": 8000,
+            "type": "string"
+          },
+          "priority": {
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "type": "string"
+          },
+          "project": {
+            "maxLength": 80,
+            "minLength": 1,
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "todo",
+              "in-progress",
+              "done"
+            ],
+            "type": "string"
+          },
+          "title": {
+            "maxLength": 240,
+            "minLength": 1,
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "notes",
+          "project",
+          "status",
+          "priority",
+          "dueDate",
+          "createdAt",
+          "updatedAt"
+        ],
+        "type": "object"
+      },
+      "permission": "tasks:write"
+    },
+    {
+      "annotations": {
+        "destructiveHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Permanently delete a task. Requires a separate delete grant.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "maxLength": 240,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object"
+      },
+      "name": "tasks.delete",
+      "outputSchema": {
+        "properties": {
+          "deleted": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "deleted"
+        ],
+        "type": "object"
+      },
+      "permission": "tasks:delete"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List installed interfaces and their versions. Source is available through frontends.get.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "name": "frontends.list",
+      "outputSchema": {
+        "type": "object"
+      },
+      "permission": "frontends:read"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Read the complete editable HTML/CSS/JavaScript source and manifest of an interface. Omit version to read the current version.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_-]+$",
+            "type": "string"
+          },
+          "version": {
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object"
+      },
+      "name": "frontends.get",
+      "outputSchema": {
+        "type": "object"
+      },
+      "permission": "frontends:read"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Publish a complete interface artifact. Use a new ID to fork shipped defaults. Updates require expectedVersion to prevent lost edits. Installation grants no new permissions and does not activate or execute code.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "expectedVersion": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "frontend": {
+            "additionalProperties": false,
+            "properties": {
+              "appId": {
+                "const": "org.fluidprotocol.workspace"
+              },
+              "author": {
+                "maxLength": 80,
+                "type": "string"
+              },
+              "builtin": {
+                "type": "boolean"
+              },
+              "description": {
+                "maxLength": 240,
+                "type": "string"
+              },
+              "html": {
+                "maxLength": 500000,
+                "minLength": 1,
+                "type": "string"
+              },
+              "id": {
+                "maxLength": 80,
+                "minLength": 1,
+                "pattern": "^[a-zA-Z0-9_-]+$",
+                "type": "string"
+              },
+              "name": {
+                "maxLength": 80,
+                "minLength": 1,
+                "type": "string"
+              },
+              "permissions": {
+                "items": {
+                  "enum": [
+                    "tasks:read",
+                    "tasks:write",
+                    "tasks:delete",
+                    "frontends:read",
+                    "frontends:write",
+                    "orders:read",
+                    "reviews:write"
+                  ],
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "protocol": {
+                "const": "0.1"
+              },
+              "updatedAt": {
+                "type": "string"
+              },
+              "version": {
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "appId",
+              "protocol",
+              "permissions",
+              "html"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "frontend",
+          "expectedVersion"
+        ],
+        "type": "object"
+      },
+      "name": "frontends.put",
+      "outputSchema": {
+        "type": "object"
+      },
+      "permission": "frontends:write"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Activate an installed interface. Optional canvasMode fills the window with user-owned UI while recovery controls remain accessible. Existing user-granted permissions apply; this tool cannot grant additional access.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "canvasMode": {
+            "type": "boolean"
+          },
+          "id": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_-]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object"
+      },
+      "name": "frontends.activate",
+      "outputSchema": {
+        "type": "object"
+      },
+      "permission": "frontends:write"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Restore a saved interface version as a new revision. expectedVersion must match the current revision. Grants cannot expand.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "expectedVersion": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "id": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_-]+$",
+            "type": "string"
+          },
+          "version": {
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "expectedVersion"
+        ],
+        "type": "object"
+      },
+      "name": "frontends.restore",
+      "outputSchema": {
+        "type": "object"
+      },
+      "permission": "frontends:write"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Read real UCI retail invoices, grouped from source lines. Filters and sorting run on the host. Review status is a separate demo workflow, not an original source fact.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "country": {
+            "maxLength": 80,
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "sale",
+              "cancellation"
+            ]
+          },
+          "limit": {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "needsReview": {
+            "type": "boolean"
+          },
+          "offset": {
+            "maximum": 1000000,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "reviewStatus": {
+            "enum": [
+              "all",
+              "active",
+              "open",
+              "in-progress",
+              "resolved"
+            ]
+          },
+          "search": {
+            "maxLength": 240,
+            "type": "string"
+          },
+          "sort": {
+            "enum": [
+              "date",
+              "priority",
+              "value"
+            ]
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "orders.list",
+      "outputSchema": {
+        "properties": {
+          "limit": {
+            "type": "integer"
+          },
+          "offset": {
+            "type": "integer"
+          },
+          "orders": {
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "total": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "orders",
+          "total",
+          "offset",
+          "limit"
+        ],
+        "type": "object"
+      },
+      "permission": "orders:read"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Read one complete invoice, source spreadsheet row numbers, immutable line items, computed review reasons, and current shared review status.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "maxLength": 240,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object"
+      },
+      "name": "orders.get",
+      "outputSchema": {
+        "properties": {
+          "items": {
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "order": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "order",
+          "items"
+        ],
+        "type": "object"
+      },
+      "permission": "orders:read"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get dataset provenance, transformation rules, exact integer-pence totals, countries, and shared review counts. Historical retail data is not a live order system.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "name": "orders.summary",
+      "outputSchema": {
+        "type": "object"
+      },
+      "permission": "orders:read"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Update the shared review overlay for a flagged invoice. Use its current expectedVersion (initially 0). Both the order table and work feed see the same update. This never changes historical source data, issues refunds, or contacts customers.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "expectedVersion": {
+            "maximum": 4294967295,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "id": {
+            "maxLength": 240,
+            "minLength": 1,
+            "type": "string"
+          },
+          "note": {
+            "maxLength": 2000,
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "open",
+              "in-progress",
+              "resolved"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "expectedVersion"
+        ],
+        "type": "object"
+      },
+      "name": "reviews.update",
+      "outputSchema": {
+        "type": "object"
+      },
+      "permission": "reviews:write"
+    }
+  ],
+  "name": "Fluid Workspace",
+  "protocol": "fluid-app",
+  "semantics": {
+    "commerce": "Real UCI Online Retail data: complete invoices grouped from source lines. Monetary amounts use integer pence. C-prefixed invoices and negative quantities are cancellations. Source data is immutable; review rules and statuses are a demo overlay shared by every frontend and agent. No shipping status or live business event is invented.",
+    "concurrency": "For frontends.put use expectedVersion 0 when creating and the current version when updating. Stale writes return VERSION_CONFLICT. reviews.update also requires its current expectedVersion.",
+    "dates": "dueDate is YYYY-MM-DD without a timezone. Timestamps are ISO 8601 UTC.",
+    "frontends": "The frontend belongs to the user. Any authorized agent can retrieve, publish, activate, or restore complete source. Shipped originals remain available as recovery copies. New artifacts start with no grants; requested scopes need user authorization.",
+    "permissions": "Grants are checked on every call. Write does not imply delete. Frontend access cannot modify grants, keys, or native shell controls.",
+    "status": {
+      "done": "Completed",
+      "in-progress": "Actively being worked on",
+      "todo": "Not started"
+    },
+    "subscriptions": "fluid.subscribe(callback) is an invalidation signal: query current state again.",
+    "task": "A unit of work. Every frontend and agent shares the same records."
+  },
+  "version": "0.1"
+}

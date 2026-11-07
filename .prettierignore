@@ -1,0 +1,16 @@
+node_modules
+dist
+dist-electron
+release
+.fluid
+test-results
+playwright-report
+package-lock.json
+*.png
+target
+crates
+Cargo.lock
+src/protocol/generated.ts
+src/protocol/contract.json
+src/protocol/defaults.json
+src/commerce/data/retail.json

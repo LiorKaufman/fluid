@@ -1,0 +1,14 @@
+node_modules/
+dist/
+dist-electron/
+release/
+.fluid/
+test-results/
+playwright-report/
+*.log
+.DS_Store
+target/
+__pycache__/
+.env
+.env.*
+!.env.example

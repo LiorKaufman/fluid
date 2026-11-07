@@ -1,0 +1,21 @@
+{
+  "title": "Online Retail",
+  "creator": "Daqing Chen",
+  "citation": "Chen, D. (2015). Online Retail [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C5BW33",
+  "url": "https://archive.ics.uci.edu/dataset/352/online%2Bretail",
+  "downloadUrl": "https://archive.ics.uci.edu/static/public/352/online%2Bretail.zip",
+  "doi": "10.24432/C5BW33",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+  "archiveSha256": "f5385cbb54bbebf7196389109c6b0621faab0c304e3702548165e71c84aede8b",
+  "workbookSha256": "43465a06f2ccf7c8b5bd2892bc7defb52f97487934fe93b16ae4c3936424676d",
+  "fullLineCount": 541909,
+  "sampleLineCount": 9735,
+  "sampleInvoiceCount": 500,
+  "selection": "First 500 distinct invoice numbers in workbook order; all lines for those invoice numbers are retained.",
+  "periodStart": "2010-12-01T08:26:00",
+  "periodEnd": "2010-12-05T15:21:00",
+  "currency": "GBP",
+  "moneyMethod": "Source prices are represented in millionths of a pound. Quantity \u00d7 price is rounded to pence per line, half away from zero, then summed per invoice.",
+  "notice": "Historical transactions, not live orders. Review tasks and their statuses are a demo workflow added by Fluid; they do not imply these historical orders were left unresolved."
+}

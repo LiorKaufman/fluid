@@ -1,0 +1,39 @@
+{
+  "appId": "org.fluidprotocol.workspace",
+  "assistant": {
+    "connections": {
+      "anthropic": {
+        "baseUrl": "https://api.anthropic.com/v1",
+        "model": ""
+      },
+      "compatible": {
+        "baseUrl": "http://127.0.0.1:1234/v1",
+        "model": ""
+      },
+      "ollama": {
+        "baseUrl": "http://127.0.0.1:11434",
+        "model": ""
+      },
+      "openai": {
+        "baseUrl": "https://api.openai.com/v1",
+        "model": ""
+      }
+    },
+    "helperVisible": true,
+    "provider": "auto"
+  },
+  "limits": {
+    "htmlUnits": 500000,
+    "requestBytes": 4194304
+  },
+  "permissions": [
+    "tasks:read",
+    "tasks:write",
+    "tasks:delete",
+    "frontends:read",
+    "frontends:write",
+    "orders:read",
+    "reviews:write"
+  ],
+  "protocol": "0.1"
+}
