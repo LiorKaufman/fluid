@@ -37,6 +37,7 @@
     "files": [
       "dist/**/*",
       "dist-electron/**/*",
+      "LICENSE",
       "package.json"
     ],
     "mac": {
