@@ -24,6 +24,10 @@ permissions:
 jobs:
   desktop:
     runs-on: macos-15
+    strategy:
+      fail-fast: false
+      matrix:
+        readiness: [immediate, focus, canvas]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
@@ -40,12 +44,13 @@ jobs:
           run-id: ${{ inputs.run_id }}
           path: release
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - run: npm run test:packaged -- --archive --repeat-each="$FLUID_TEST_REPEAT"
+      - run: npm run test:packaged -- --archive --grep "bundled MCP adapter" --repeat-each="$FLUID_TEST_REPEAT"
         env:
           FLUID_TEST_REPEAT: ${{ inputs.repeat_each }}
+          FLUID_INPUT_READINESS: ${{ matrix.readiness }}
       - uses: actions/upload-artifact@v7
         if: failure()
         with:
-          name: archived-mac-failure
+          name: archived-mac-failure-${{ matrix.readiness }}
           path: test-results/
           if-no-files-found: ignore

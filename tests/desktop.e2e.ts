@@ -249,6 +249,20 @@ test('desktop: bundled MCP adapter connects to the actual app and live updates i
   });
   try {
     const page = await app.firstWindow();
+    if (process.env.FLUID_INPUT_READINESS === 'focus') {
+      await app.evaluate(({ app, BrowserWindow }) => {
+        app.focus({ steal: true });
+        BrowserWindow.getAllWindows()[0].focus();
+      });
+      await page.bringToFront();
+    }
+    if (process.env.FLUID_INPUT_READINESS === 'canvas') {
+      await expect(
+        page.frameLocator('iframe.surface').getByRole('heading', {
+          name: 'Make room for good work.',
+        }),
+      ).toBeVisible();
+    }
     await page
       .getByRole('button', { name: 'Connect an agent', exact: true })
       .click();
@@ -288,6 +302,9 @@ test('desktop: bundled MCP adapter connects to the actual app and live updates i
         exact: true,
       }),
     ).toHaveAttribute('aria-checked', 'true');
+    await expect(page.locator('.connection-config')).toContainText(
+      'FLUID_AGENT_TOKEN',
+    );
     const config = JSON.parse(
       await page.locator('.connection-config').innerText(),
     ).mcpServers['fluid-workspace'];
