@@ -27,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        readiness: [probe, exclude-iframe]
+        readiness: [iframe-hidden, iframe-removed]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7

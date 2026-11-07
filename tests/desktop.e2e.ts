@@ -250,7 +250,7 @@ test('desktop: bundled MCP adapter connects to the actual app and live updates i
   try {
     const page = await app.firstWindow();
     if (
-      ['probe', 'exclude-iframe'].includes(
+      ['probe', 'iframe-hidden', 'iframe-removed'].includes(
         process.env.FLUID_INPUT_READINESS ?? '',
       )
     ) {
@@ -286,9 +286,17 @@ test('desktop: bundled MCP adapter connects to the actual app and live updates i
       await page.addInitScript(capture);
       await Promise.all(page.frames().map((frame) => frame.evaluate(capture)));
     }
-    if (process.env.FLUID_INPUT_READINESS === 'exclude-iframe') {
+    if (
+      ['iframe-hidden', 'iframe-removed'].includes(
+        process.env.FLUID_INPUT_READINESS ?? '',
+      )
+    ) {
+      const property =
+        process.env.FLUID_INPUT_READINESS === 'iframe-hidden'
+          ? 'visibility: hidden'
+          : 'display: none';
       await page.addStyleTag({
-        content: '.app:has(dialog[open]) iframe { pointer-events: none; }',
+        content: `.app:has(dialog[open]) iframe { ${property}; }`,
       });
     }
     if (process.env.FLUID_INPUT_READINESS === 'focus') {
@@ -312,7 +320,7 @@ test('desktop: bundled MCP adapter connects to the actual app and live updates i
       .getByRole('switch', { name: 'External agent access', exact: true })
       .click();
     if (
-      ['probe', 'exclude-iframe'].includes(
+      ['probe', 'iframe-hidden', 'iframe-removed'].includes(
         process.env.FLUID_INPUT_READINESS ?? '',
       )
     ) {
@@ -325,6 +333,13 @@ test('desktop: bundled MCP adapter connects to the actual app and live updates i
               '[aria-label="External agent access"]',
             );
             return {
+              frameStyles: Array.from(document.querySelectorAll('iframe')).map(
+                (frame) => ({
+                  pointerEvents: getComputedStyle(frame).pointerEvents,
+                  visibility: getComputedStyle(frame).visibility,
+                  display: getComputedStyle(frame).display,
+                }),
+              ),
               modal: dialog?.matches(':modal'),
               bounds: control?.getBoundingClientRect().toJSON(),
               enabled: control?.getAttribute('aria-checked'),
