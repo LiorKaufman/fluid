@@ -249,6 +249,39 @@ test('desktop: bundled MCP adapter connects to the actual app and live updates i
   });
   try {
     const page = await app.firstWindow();
+    if (process.env.FLUID_INPUT_READINESS === 'probe') {
+      page.on('console', (message) => {
+        if (message.text().startsWith('[FLUID_INPUT_PROBE]'))
+          console.log(message.text());
+      });
+      const capture = () => {
+        for (const type of ['pointerdown', 'mousedown', 'mouseup', 'click']) {
+          document.addEventListener(
+            type,
+            (event) => {
+              const mouse = event as MouseEvent;
+              const target = event.target as Element | null;
+              console.log(
+                '[FLUID_INPUT_PROBE]',
+                JSON.stringify({
+                  frame: window === window.top ? 'shell' : 'frontend',
+                  type,
+                  x: mouse.clientX,
+                  y: mouse.clientY,
+                  tag: target?.tagName,
+                  role: target?.closest('[role]')?.getAttribute('role'),
+                  label: target?.closest('button')?.getAttribute('aria-label'),
+                  focused: document.hasFocus(),
+                }),
+              );
+            },
+            true,
+          );
+        }
+      };
+      await page.addInitScript(capture);
+      await Promise.all(page.frames().map((frame) => frame.evaluate(capture)));
+    }
     if (process.env.FLUID_INPUT_READINESS === 'focus') {
       await app.evaluate(({ app, BrowserWindow }) => {
         app.focus({ steal: true });
@@ -269,6 +302,25 @@ test('desktop: bundled MCP adapter connects to the actual app and live updates i
     await page
       .getByRole('switch', { name: 'External agent access', exact: true })
       .click();
+    if (process.env.FLUID_INPUT_READINESS === 'probe') {
+      console.log(
+        '[FLUID_INPUT_PROBE]',
+        JSON.stringify(
+          await page.evaluate(() => {
+            const dialog = document.querySelector('dialog');
+            const control = document.querySelector(
+              '[aria-label="External agent access"]',
+            );
+            return {
+              modal: dialog?.matches(':modal'),
+              bounds: control?.getBoundingClientRect().toJSON(),
+              enabled: control?.getAttribute('aria-checked'),
+              focused: document.hasFocus(),
+            };
+          }),
+        ),
+      );
+    }
     await expect(page.locator('.connection-config')).toContainText(
       'FLUID_AGENT_TOKEN',
     );
