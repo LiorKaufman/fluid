@@ -11,6 +11,12 @@ on:
         required: true
         type: string
 
+      repeat_each:
+        description: Number of times to exercise all five desktop tests
+        required: false
+        default: 1
+        type: number
+
 permissions:
   contents: read
   actions: read
@@ -34,7 +40,9 @@ jobs:
           run-id: ${{ inputs.run_id }}
           path: release
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - run: npm run test:packaged -- --archive
+      - run: npm run test:packaged -- --archive --repeat-each="$FLUID_TEST_REPEAT"
+        env:
+          FLUID_TEST_REPEAT: ${{ inputs.repeat_each }}
       - uses: actions/upload-artifact@v7
         if: failure()
         with:

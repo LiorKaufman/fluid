@@ -258,6 +258,36 @@ test('desktop: bundled MCP adapter connects to the actual app and live updates i
     await expect(page.locator('.connection-config')).toContainText(
       'FLUID_AGENT_TOKEN',
     );
+    // Copy failure must remain visible and actionable inside the modal layer.
+    await page.evaluate(() => {
+      Object.defineProperty(navigator.clipboard, 'writeText', {
+        value: async () => {
+          throw new Error('Clipboard unavailable in test');
+        },
+        configurable: true,
+      });
+    });
+    const dialog = page.getByRole('dialog', { name: 'Bring your own agent.' });
+    await dialog.getByRole('button', { name: 'Copy', exact: true }).click();
+    await expect(dialog.getByRole('status')).toContainText(
+      'Select and copy the configuration below.',
+    );
+    await dialog.getByRole('button', { name: 'Dismiss notification' }).click();
+    await expect(dialog.getByRole('status')).toHaveCount(0);
+    await page.keyboard.press('Escape');
+    await expect(dialog).toHaveCount(0);
+    const connectButton = page.getByRole('button', {
+      name: 'Connect an agent',
+      exact: true,
+    });
+    await expect(connectButton).toBeFocused();
+    await connectButton.click();
+    await expect(
+      dialog.getByRole('switch', {
+        name: 'External agent access',
+        exact: true,
+      }),
+    ).toHaveAttribute('aria-checked', 'true');
     const config = JSON.parse(
       await page.locator('.connection-config').innerText(),
     ).mcpServers['fluid-workspace'];

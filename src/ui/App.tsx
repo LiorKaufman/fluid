@@ -186,11 +186,13 @@ function Dialog({
   title,
   onClose,
   wide = false,
+  notices,
 }: {
   children: ReactNode;
   title: string;
   onClose: () => void;
   wide?: boolean;
+  notices?: ReactNode;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   useLayoutEffect(() => {
@@ -227,6 +229,7 @@ function Dialog({
         </div>
         {children}
       </div>
+      {notices}
     </dialog>
   );
 }
@@ -447,6 +450,28 @@ export function App() {
         }}
       />
     );
+  const notices = (
+    <>
+      {toast && (
+        <div className="app-toast" role="status">
+          <CheckCheck size={15} />
+          <span>{toast}</span>
+          <button
+            aria-label="Dismiss notification"
+            onClick={() => setToast('')}
+          >
+            <X size={13} />
+          </button>
+        </div>
+      )}
+      {fatal && (
+        <div className="connection-error" role="alert">
+          Connection interrupted: {fatal}
+          <button onClick={() => location.reload()}>Reconnect</button>
+        </div>
+      )}
+    </>
+  );
   const nav = (id: Page, icon: ReactNode, suffix?: ReactNode) => (
     <button
       aria-label={labels[id]}
@@ -1065,27 +1090,11 @@ export function App() {
           e.target.value = '';
         }}
       />
-      {toast && (
-        <div className="app-toast" role="status">
-          <CheckCheck size={15} />
-          <span>{toast}</span>
-          <button
-            aria-label="Dismiss notification"
-            onClick={() => setToast('')}
-          >
-            <X size={13} />
-          </button>
-        </div>
-      )}
-      {fatal && (
-        <div className="connection-error" role="alert">
-          Connection interrupted: {fatal}
-          <button onClick={() => location.reload()}>Reconnect</button>
-        </div>
-      )}
+      {!(connect || consent || commands) && notices}
       {connect && (
         <AgentDialog
           snapshot={snapshot}
+          notices={notices}
           onClose={() => setConnect(false)}
           act={act}
           notify={notify}
@@ -1094,6 +1103,7 @@ export function App() {
       {consent && (
         <Consent
           frontend={consent}
+          notices={notices}
           current={snapshot.grants[consent.id] ?? []}
           onClose={() => setConsent(undefined)}
           onAllow={async (grants) => {
@@ -1107,6 +1117,7 @@ export function App() {
       {commands && (
         <Commands
           snapshot={snapshot}
+          notices={notices}
           onClose={() => setCommands(false)}
           onPage={(id) => {
             setPage(id);
@@ -1283,11 +1294,13 @@ function Consent({
   frontend,
   current,
   onClose,
+  notices,
   onAllow,
 }: {
   frontend: Frontend;
   current: Permission[];
   onClose: () => void;
+  notices: ReactNode;
   onAllow: (grants: Permission[]) => Promise<void>;
 }) {
   const [grants, setGrants] = useState<Permission[]>(
@@ -1298,7 +1311,7 @@ function Consent({
   const [busy, setBusy] = useState(false),
     [error, setError] = useState('');
   return (
-    <Dialog title="A little introduction." onClose={onClose}>
+    <Dialog title="A little introduction." notices={notices} onClose={onClose}>
       <div className="consent-icon">
         <Blocks size={24} />
       </div>
@@ -1354,11 +1367,13 @@ function Consent({
 function AgentDialog({
   snapshot,
   onClose,
+  notices,
   act,
   notify,
 }: {
   snapshot: Snapshot;
   onClose: () => void;
+  notices: ReactNode;
   act: (method: string, ...args: unknown[]) => Promise<unknown>;
   notify: (message: string) => void;
 }) {
@@ -1408,7 +1423,12 @@ function AgentDialog({
     2,
   );
   return (
-    <Dialog title="Bring your own agent." onClose={onClose} wide>
+    <Dialog
+      title="Bring your own agent."
+      notices={notices}
+      onClose={onClose}
+      wide
+    >
       <div className="agent-intro">
         <span>
           <Terminal size={25} />
@@ -1532,17 +1552,23 @@ function AgentDialog({
 function Commands({
   snapshot,
   onClose,
+  notices,
   onPage,
   onActivate,
 }: {
   snapshot: Snapshot;
   onClose: () => void;
+  notices: ReactNode;
   onPage: (id: Page) => void;
   onActivate: (f: FrontendSummary) => void;
 }) {
   const [query, setQuery] = useState('');
   return (
-    <Dialog title="Find a little direction." onClose={onClose}>
+    <Dialog
+      title="Find a little direction."
+      notices={notices}
+      onClose={onClose}
+    >
       <input
         autoFocus
         className="command-input"
