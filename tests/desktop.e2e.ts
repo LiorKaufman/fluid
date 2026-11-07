@@ -249,7 +249,11 @@ test('desktop: bundled MCP adapter connects to the actual app and live updates i
   });
   try {
     const page = await app.firstWindow();
-    if (process.env.FLUID_INPUT_READINESS === 'probe') {
+    if (
+      ['probe', 'exclude-iframe'].includes(
+        process.env.FLUID_INPUT_READINESS ?? '',
+      )
+    ) {
       page.on('console', (message) => {
         if (message.text().startsWith('[FLUID_INPUT_PROBE]'))
           console.log(message.text());
@@ -282,6 +286,11 @@ test('desktop: bundled MCP adapter connects to the actual app and live updates i
       await page.addInitScript(capture);
       await Promise.all(page.frames().map((frame) => frame.evaluate(capture)));
     }
+    if (process.env.FLUID_INPUT_READINESS === 'exclude-iframe') {
+      await page.addStyleTag({
+        content: '.app:has(dialog[open]) iframe { pointer-events: none; }',
+      });
+    }
     if (process.env.FLUID_INPUT_READINESS === 'focus') {
       await app.evaluate(({ app, BrowserWindow }) => {
         app.focus({ steal: true });
@@ -302,7 +311,11 @@ test('desktop: bundled MCP adapter connects to the actual app and live updates i
     await page
       .getByRole('switch', { name: 'External agent access', exact: true })
       .click();
-    if (process.env.FLUID_INPUT_READINESS === 'probe') {
+    if (
+      ['probe', 'exclude-iframe'].includes(
+        process.env.FLUID_INPUT_READINESS ?? '',
+      )
+    ) {
       console.log(
         '[FLUID_INPUT_PROBE]',
         JSON.stringify(
