@@ -16,6 +16,8 @@ The app has a stable authority and a fluid presentation. Rust owns that authorit
 
 `npm run native:build` compiles an explicit native Cargo target and exports TypeScript declarations, the contract, and defaults. Development binaries are staged under `.fluid/native/<os>-<arch>/`, independent of Cargo's output-directory settings. `npm run build` does this before compiling the shell. Packaging builds the selected Electron architecture and verifies the staged binary's version and checksum after copying it. A packaged app ships the executable at `Contents/Resources/native/fluid-host` on macOS. MCP stdio invokes that executable directly, without Node.
 
+MSVC targets statically link the C runtime through `.cargo/config.toml`. Windows CI inspects the host's DLL imports and rejects a dependency on Visual C++ redistributable DLLs, which may be present on developer machines but absent on a clean user's computer.
+
 ## Concrete improvements
 
 - **One implementation of authority.** Desktop IPC, HTML frontends, WebMCP, and MCP all reach Rust. Schemas compile once per host, and inspection uses the execution registry.

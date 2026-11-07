@@ -1,0 +1,3 @@
+# Keep the Windows host runnable without a Visual C++ redistributable install.
+[target.'cfg(target_env = "msvc")']
+rustflags = ["-C", "target-feature=+crt-static"]

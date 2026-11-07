@@ -51,6 +51,19 @@ jobs:
           cargo test --workspace --locked
           npm run format:check
       - run: npm run build
+      - name: Windows host needs no Visual C++ runtime install
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio/Installer/vswhere.exe'
+          $installation = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          $dumpbin = Get-ChildItem "$installation/VC/Tools/MSVC/*/bin/Hostx64/x64/dumpbin.exe" | Sort-Object FullName -Descending | Select-Object -First 1
+          if (!$dumpbin) { throw 'MSVC dumpbin was not found.' }
+          $imports = & $dumpbin.FullName /DEPENDENTS '.fluid/native/win-x64/fluid-host.exe'
+          $imports
+          if ($LASTEXITCODE -ne 0 -or $imports -match '(?i)(vcruntime|msvcp|concrt)[^\s]*\.dll') {
+            throw 'The native host must not require the Visual C++ redistributable.'
+          }
       - name: Generated bindings are current
         run: git diff --exit-code -- src/protocol
       - run: npm test
