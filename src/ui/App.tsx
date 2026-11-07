@@ -1,6 +1,7 @@
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   type ReactNode,
@@ -191,52 +192,29 @@ function Dialog({
   onClose: () => void;
   wide?: boolean;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const previous = document.activeElement as HTMLElement | null;
-    const dialog = ref.current;
-    const focusable = () =>
-      Array.from(
-        dialog?.querySelectorAll<HTMLElement>(
-          'button:not(:disabled), input, textarea, select, [tabindex="0"]',
-        ) ?? [],
-      );
-    focusable()[0]?.focus();
-    const key = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-      if (e.key === 'Tab') {
-        const elements = focusable(),
-          first = elements[0],
-          last = elements.at(-1);
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last?.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault();
-          first?.focus();
-        }
-      }
-    };
-    document.addEventListener('keydown', key);
+  const ref = useRef<HTMLDialogElement>(null);
+  useLayoutEffect(() => {
+    const dialog = ref.current!;
+    dialog.showModal();
     return () => {
-      document.removeEventListener('keydown', key);
-      previous?.focus();
+      dialog.close();
     };
-  }, [onClose]);
+  }, []);
   return (
-    <div
+    <dialog
+      ref={ref}
       className="dialog-backdrop"
+      aria-label={title}
+      aria-modal="true"
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose();
+      }}
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div
-        className={`dialog ${wide ? 'wide' : ''}`}
-        role="dialog"
-        aria-modal="true"
-        aria-label={title}
-        ref={ref}
-      >
+      <div className={`dialog ${wide ? 'wide' : ''}`}>
         <div className="dialog-heading">
           <h2>{title}</h2>
           <button
@@ -249,7 +227,7 @@ function Dialog({
         </div>
         {children}
       </div>
-    </div>
+    </dialog>
   );
 }
 function Preview({ id, large = false }: { id: string; large?: boolean }) {

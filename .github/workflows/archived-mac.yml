@@ -1,5 +1,8 @@
 name: Archived Mac desktop check
 
+# Replays desktop tests against an existing archive; Alpha validation builds and
+# verifies all release binaries from source.
+
 on:
   workflow_dispatch:
     inputs:
@@ -16,10 +19,6 @@ jobs:
   desktop:
     runs-on: macos-15
     timeout-minutes: 10
-    strategy:
-      fail-fast: false
-      matrix:
-        mode: [original, fit-window]
     steps:
       - uses: actions/checkout@v7
         with:
@@ -35,13 +34,10 @@ jobs:
           run-id: ${{ inputs.run_id }}
           path: release
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - run: npm run test:packaged -- --archive --grep 'interchangeable interfaces|bundled MCP adapter' --repeat-each=3
-        env:
-          FLUID_TRACE_AGENT: '1'
-          FLUID_FIT_WINDOW: ${{ matrix.mode == 'fit-window' && '1' || '0' }}
+      - run: npm run test:packaged -- --archive
       - uses: actions/upload-artifact@v7
         if: failure()
         with:
-          name: archived-mac-failure-${{ matrix.mode }}
+          name: archived-mac-failure
           path: test-results/
           if-no-files-found: ignore

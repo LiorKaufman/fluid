@@ -11,7 +11,7 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 import { createServer } from 'node:http';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
-import { APP_ID, PROTOCOL_VERSION, type Snapshot } from '../src/protocol/index';
+import { APP_ID, PROTOCOL_VERSION } from '../src/protocol/index';
 
 const launchDesktop = (environment: Record<string, string>) =>
   electron.launch({
@@ -243,102 +243,18 @@ test('desktop: bundled MCP adapter connects to the actual app and live updates i
   environment.FLUID_DATA_DIR = directory;
   delete environment.ELECTRON_RUN_AS_NODE;
   const app = await launchDesktop(environment);
-  const diagnostic = process.env.FLUID_TRACE_AGENT === '1';
-  const stderr: string[] = [];
-  if (diagnostic)
-    app
-      .process()
-      .stderr?.on('data', (chunk: Buffer) => stderr.push(chunk.toString()));
   const client = new Client({
     name: 'desktop-integration-test',
     version: '1.0',
   });
   try {
     const page = await app.firstWindow();
-    if (diagnostic) {
-      const geometry = await app.evaluate(({ BrowserWindow, screen }) => ({
-        bounds: BrowserWindow.getAllWindows()[0].getBounds(),
-        workArea: screen.getPrimaryDisplay().workArea,
-        focused: BrowserWindow.getAllWindows()[0].isFocused(),
-      }));
-      console.log('Native window geometry:', JSON.stringify(geometry));
-      if (process.env.FLUID_FIT_WINDOW === '1')
-        await app.evaluate(({ BrowserWindow, screen }) => {
-          const window = BrowserWindow.getAllWindows()[0],
-            area = screen.getPrimaryDisplay().workArea;
-          window.setMinimumSize(
-            Math.min(960, area.width),
-            Math.min(680, area.height),
-          );
-          window.setBounds({
-            ...area,
-            width: Math.min(1440, area.width),
-            height: Math.min(970, area.height),
-          });
-        });
-    }
-    if (diagnostic)
-      await page.evaluate(() => {
-        const events: object[] = [];
-        for (const type of ['mousedown', 'mouseup', 'click'])
-          document.addEventListener(
-            type,
-            (event) => {
-              const target = event.target;
-              if (!(target instanceof Element)) return;
-              events.push({
-                type,
-                target: target.tagName,
-                label: target.closest('button')?.getAttribute('aria-label'),
-                focused: document.hasFocus(),
-                switchState: document
-                  .querySelector('[aria-label="External agent access"]')
-                  ?.getAttribute('aria-checked'),
-              });
-              document.documentElement.dataset.agentEvents = JSON.stringify(
-                events.slice(-20),
-              );
-            },
-            true,
-          );
-      });
     await page
       .getByRole('button', { name: 'Connect an agent', exact: true })
       .click();
     await page
       .getByRole('switch', { name: 'External agent access', exact: true })
       .click();
-    if (diagnostic) {
-      const state = await page.evaluate(async () => {
-        const reply = await window.fluidDesktop!.request('snapshot', []);
-        const snapshot = reply.ok ? (reply.value as Snapshot) : undefined;
-        return {
-          viewport: { width: innerWidth, height: innerHeight },
-          switchBounds: document
-            .querySelector('[aria-label="External agent access"]')
-            ?.getBoundingClientRect()
-            .toJSON(),
-          events: JSON.parse(
-            document.documentElement.dataset.agentEvents ?? '[]',
-          ),
-          enabled: snapshot?.agent.enabled,
-          revision: snapshot?.revision,
-          error: !reply.ok ? reply.error.code : undefined,
-          toast: document.querySelector('.toast')?.textContent,
-          access: snapshot?.activity
-            .filter((item) => item.action === 'agent.access')
-            .map((item) => item.detail),
-        };
-      });
-      console.log('Agent click diagnostic:', JSON.stringify(state));
-      const sanitized = stderr
-        .join('')
-        .replace(/\b[a-f0-9]{64}\b/gi, '<REDACTED>');
-      await test.info().attach('native-diagnostics', {
-        body: sanitized,
-        contentType: 'text/plain',
-      });
-    }
     await expect(page.locator('.connection-config')).toContainText(
       'FLUID_AGENT_TOKEN',
     );

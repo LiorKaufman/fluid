@@ -1672,6 +1672,13 @@ textarea {
 .dialog-backdrop {
   position: fixed;
   inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  border: 0;
+  color: inherit;
   background: #16362050;
   backdrop-filter: blur(5px);
   display: flex;
@@ -1679,6 +1686,9 @@ textarea {
   justify-content: center;
   z-index: 50;
   padding: 25px;
+}
+.dialog-backdrop::backdrop {
+  background: transparent;
 }
 .dialog {
   background: #fcfdf9;

@@ -10,6 +10,7 @@
 - Accept large Unicode and escaped interface source consistently across transports.
 - Build and verify architecture-specific Rust hosts for desktop packages.
 - Link the Windows host's C runtime statically and verify DLL imports in CI.
+- Use native modal dialogs for focus and input handling above embedded interfaces.
 - Add unsigned alpha archives, SHA-256 checksums, packaged desktop verification, and a macOS/Windows/Linux CI matrix.
 
 The app is experimental, local, and single-user. Protocol 0.1 remains experimental. See [alpha scope and platform status](docs/ALPHA.md).
