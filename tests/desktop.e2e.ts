@@ -255,6 +255,28 @@ test('desktop: bundled MCP adapter connects to the actual app and live updates i
   });
   try {
     const page = await app.firstWindow();
+    if (diagnostic) {
+      const geometry = await app.evaluate(({ BrowserWindow, screen }) => ({
+        bounds: BrowserWindow.getAllWindows()[0].getBounds(),
+        workArea: screen.getPrimaryDisplay().workArea,
+        focused: BrowserWindow.getAllWindows()[0].isFocused(),
+      }));
+      console.log('Native window geometry:', JSON.stringify(geometry));
+      if (process.env.FLUID_FIT_WINDOW === '1')
+        await app.evaluate(({ BrowserWindow, screen }) => {
+          const window = BrowserWindow.getAllWindows()[0],
+            area = screen.getPrimaryDisplay().workArea;
+          window.setMinimumSize(
+            Math.min(960, area.width),
+            Math.min(680, area.height),
+          );
+          window.setBounds({
+            ...area,
+            width: Math.min(1440, area.width),
+            height: Math.min(970, area.height),
+          });
+        });
+    }
     if (diagnostic)
       await page.evaluate(() => {
         const events: object[] = [];
@@ -291,6 +313,11 @@ test('desktop: bundled MCP adapter connects to the actual app and live updates i
         const reply = await window.fluidDesktop!.request('snapshot', []);
         const snapshot = reply.ok ? (reply.value as Snapshot) : undefined;
         return {
+          viewport: { width: innerWidth, height: innerHeight },
+          switchBounds: document
+            .querySelector('[aria-label="External agent access"]')
+            ?.getBoundingClientRect()
+            .toJSON(),
           events: JSON.parse(
             document.documentElement.dataset.agentEvents ?? '[]',
           ),
@@ -307,12 +334,10 @@ test('desktop: bundled MCP adapter connects to the actual app and live updates i
       const sanitized = stderr
         .join('')
         .replace(/\b[a-f0-9]{64}\b/gi, '<REDACTED>');
-      await test
-        .info()
-        .attach('native-diagnostics', {
-          body: sanitized,
-          contentType: 'text/plain',
-        });
+      await test.info().attach('native-diagnostics', {
+        body: sanitized,
+        contentType: 'text/plain',
+      });
     }
     await expect(page.locator('.connection-config')).toContainText(
       'FLUID_AGENT_TOKEN',

@@ -106,7 +106,7 @@ if (!executable || !existsSync(executable))
 console.log(`Testing packaged app: ${executable}`);
 const result = spawnSync(
   process.execPath,
-  ['node_modules/@playwright/test/cli.js', 'test'],
+  ['node_modules/@playwright/test/cli.js', 'test', ...process.argv.slice(3)],
   {
     stdio: 'inherit',
     env: { ...process.env, FLUID_PACKAGED_APP: executable },
